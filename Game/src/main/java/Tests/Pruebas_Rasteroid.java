@@ -22,9 +22,9 @@ public class Pruebas_Rasteroid extends JFrame implements Runnable{
     private JButton boton;
     private JTextArea textArea ;
     
-    private int anguloFuerza = 62;
-    private int potencia = 50;
-    private boolean powerPressed = false;
+    private int anguloFuerza = 0;
+    private int potencia = 100;
+    private boolean accelerando = false;
 
     public Pruebas_Rasteroid() {
         crearInterfaz(this);
@@ -44,13 +44,12 @@ public class Pruebas_Rasteroid extends JFrame implements Runnable{
     private void updatePositions() {
         for (GameObject nave : naves) {
             
-            if (!powerPressed) {
-                nave.getDynamicBody().move();
-                if( potencia > 0 )potencia-= 0.5 ;
+            if (!accelerando) {
+                nave.getDynamicBody().move(0,0);
+                if( potencia > 0 )potencia-= 0.3;
             } else {
-                potencia += 2.5;
+                potencia = 100;
                 nave.getDynamicBody().move(anguloFuerza, potencia);
-                //System.out.println("fuego mami");
             }
             
         }
@@ -75,8 +74,8 @@ public class Pruebas_Rasteroid extends JFrame implements Runnable{
         pane.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.VERTICAL;
-        boton = new JButton("ENVIA EL ANGULO");
-        textArea = new JTextArea("ESCRIBE EL ANGULO");
+        boton = new JButton("ENVIA EL Ã?NGULO");
+        textArea = new JTextArea("ESCRIBE EL Ã?NGULO");
         viewer = new Viewer(naves, papi.getWidth()-30, papi.getHeight()-50);
         viewer.addKeyListener(new TAdapter());
 
@@ -106,7 +105,6 @@ public class Pruebas_Rasteroid extends JFrame implements Runnable{
             public void actionPerformed(ActionEvent e) {
                 
                 int angulo = Integer.parseInt(textArea.getText());
-                System.out.println("Me has clocado. El Angulo es " +angulo);
                 //TODO 
                 //paso el angulo a la nave
                  for (int i = 0; i < naves.size(); i++) {
@@ -127,7 +125,7 @@ public class Pruebas_Rasteroid extends JFrame implements Runnable{
         while (true) {
             try {
                 updatePositions();
-                powerPressed = false;
+                accelerando = false;
                 sleep(16);
             } catch (InterruptedException ex) {
                 System.out.println("El thread ha sufrido un problema");
@@ -139,7 +137,26 @@ public class Pruebas_Rasteroid extends JFrame implements Runnable{
 
         @Override
         public void keyPressed(KeyEvent e) {
-            powerPressed = true;
+                int tecla = e.getKeyCode();
+            switch(tecla){
+                case 38: // La tecla de arriba
+                    accelerando = true;
+                    break;
+                case 37:   //  IZQUIERDA -->   37
+                    //restar
+                    anguloFuerza = anguloFuerza-10;
+                    for (int i = 0; i < naves.size(); i++) {
+                       naves.get(i).getDynamicBody().setAngle(anguloFuerza);
+                    }
+                    break;
+                case 39://  DERECHA -->     39
+                    anguloFuerza = anguloFuerza + 10;
+                    for (int i = 0; i < naves.size(); i++) {
+                       naves.get(i).getDynamicBody().setAngle(anguloFuerza);
+                    }
+                    break; 
+            }
+         
         }
     }
 }

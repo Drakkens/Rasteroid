@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Tests;
 
 import java.awt.Canvas;
@@ -11,7 +7,6 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.Image;
 import java.awt.Transparency;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
@@ -23,16 +18,12 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 
-/**
- *
- * Esta es una prueba
- */
 public class Viewer extends Canvas implements Runnable {
 
     private  BufferedImage ii;
     private ArrayList<GameObject> naves;
+    private BufferedImage iii ;
 
     public Viewer(ArrayList<GameObject> naves, int width, int height) {
         this.naves = naves;
@@ -42,13 +33,11 @@ public class Viewer extends Canvas implements Runnable {
 
     public void run() {
         try {
-
             Thread.sleep(500);
 
             this.createBufferStrategy(2);
             while (true) {
                 paint2();
-
                 Thread.sleep(16);
 
             }
@@ -60,12 +49,10 @@ public class Viewer extends Canvas implements Runnable {
     private void paint2() {
         BufferStrategy bs = getBufferStrategy();
         if (bs == null) {
-            System.out.println("mal");
             return;
         }
         Graphics g = bs.getDrawGraphics();
         if (g == null) {
-            System.out.println("mal 2");
             return;
         }
 
@@ -79,37 +66,31 @@ public class Viewer extends Canvas implements Runnable {
 
     private void pintarNaves(Graphics g) {
         try {
-            BufferedImage iii = ImageIO.read(new File("Rasteroid\\Game\\src\\main\\java\\Tests\\Resources\\shipGirada.png"));
+            iii = ImageIO.read(new File("src\\resources\\shipGirada.png"));
             ii = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
             Graphics g2 = ii.createGraphics();
             g2.drawImage(iii, 0, 0, 100, 100, null);
+            g2.setColor(Color.blue);
+            g2.fillOval(0, 0, 7, 7);
             g2.dispose();
         } catch (IOException ex) {
             Logger.getLogger(Viewer.class.getName()).log(Level.SEVERE, null, ex);
         }
  
         for (int i = 0; i < naves.size(); i++) {
-            BufferedImage imagenRotada = rotate(ii, naves.get(i).getDynamicBody().getAngle());
-//            System.out.println("El anulo es " + naves.get(i).getAngle());
+            AffineTransform affineTransform = new AffineTransform();
+            
+            //Poner la posicion del affinetransform
+            affineTransform.translate( naves.get(i).getDynamicBody().getPosX(), naves.get(i).getDynamicBody().getPosY());
+            //rotar el affineTransform
+            affineTransform.rotate(Math.toRadians(naves.get(i).getDynamicBody().getAngle()));
+            // esto es para que gire por el centro de la figura (como mide 100 x100, ponemos que gire a mitad de cada distancia)
+            affineTransform.translate(-50, -50);
+            //Cambiar el tamaño
+            affineTransform.scale(1,1);
 
-        
-            g.drawImage(imagenRotada,(int) naves.get(i).getDynamicBody().getPosX(),(int) naves.get(i).getDynamicBody().getPosY(), imagenRotada.getWidth(),imagenRotada.getHeight(), this);
-            
-//            double rotationRequired = Math.toRadians (naves.get(i).getAngle());
-//            double locationX = ii.getWidth() / 2;
-//            double locationY = ii.getHeight() / 2;
-//            AffineTransform tx = AffineTransform.getRotateInstance(rotationRequired, locationX, locationY);
-//            AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
-//
-//            // Drawing the rotated image at the required drawing locations
-//            g.drawImage(op.filter(ii, null), (int) naves.get(i).getPosX() ,(int) naves.get(i).getPosY(),100,100, null);
-            
-            
-          //  g.drawImage(ii.getImage(),(int) naves.get(i).getDynamicBody().getPosX() ,(int) naves.get(i).getDynamicBody().getPosY(), 100,100, this);
-            //g.drawRect((int) naves.get(i).getPosX(), (int) naves.get(i).getPosY(), 10, 10);
-            // g.fillRect((int) naves.get(i).getPosX(), (int) naves.get(i).getPosY(), 10, 10);
-            //g.drawRect(20, 20, 10, 10);
-            // g.drawImage(naves.get(i), coordenadaX, coordenadaY, null);
+            Graphics2D g2 = (Graphics2D) g;
+            g2.drawImage(ii, affineTransform, this); 
         }
     }
 
@@ -121,28 +102,5 @@ public class Viewer extends Canvas implements Runnable {
         g.setColor(Color.WHITE);
         g.fillRect(x1, y1, x2, y2);
     }
-    
-    
-    public static BufferedImage rotate(BufferedImage image, double angle) {
-            double radians = Math.toRadians(angle);
-            //System.out.println("El radian es " + radians);
-            double sin = Math.abs(Math.sin(radians)), cos = Math.abs(Math.cos(radians));
-            int w = image.getWidth(), h = image.getHeight();
-            int neww = (int)Math.floor(w*cos+h*sin), newh = (int) Math.floor(h * cos + w * sin);
-            GraphicsConfiguration gc = getDefaultConfiguration();
-            BufferedImage result = gc.createCompatibleImage(neww, newh, Transparency.TRANSLUCENT);
-            Graphics2D g = result.createGraphics();
-            g.translate((neww - w) / 2, (newh - h) / 2);
-            g.rotate(radians, w / 2, h / 2);
-            g.drawRenderedImage(image, null);
-            g.dispose();
-            return result;
-}
-
-private static GraphicsConfiguration getDefaultConfiguration() {
-    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-    GraphicsDevice gd = ge.getDefaultScreenDevice();
-    return gd.getDefaultConfiguration();
-}
 
 }
