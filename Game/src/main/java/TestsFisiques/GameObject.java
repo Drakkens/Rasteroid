@@ -1,4 +1,4 @@
-package Tests;
+package TestsFisiques;
 
 public class GameObject {
     private Body staticBody;

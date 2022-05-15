@@ -1,4 +1,4 @@
-package Tests;
+package TestsFisiques;
 
 import java.awt.ComponentOrientation;
 import java.awt.Container;
