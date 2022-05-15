@@ -66,7 +66,7 @@ public class Viewer extends Canvas implements Runnable {
 
     private void pintarNaves(Graphics g) {
         try {
-            iii = ImageIO.read(new File("src\\resources\\shipGirada.png"));
+            iii = ImageIO.read(new File("src/main/java/Tests/Resources/shipGirada.png"));
             ii = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
             Graphics g2 = ii.createGraphics();
             g2.drawImage(iii, 0, 0, 100, 100, null);
